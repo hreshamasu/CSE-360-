@@ -33,7 +33,7 @@ public class WelcomeLoginPage {
 	    	System.out.println(role);
 	    	
 	    	if(role.equals("admin")) {
-	    		new AdminHomePage().show(primaryStage);
+	    		new AdminHomePage(databaseHelper).show(primaryStage);
 	    	}
 	    	else if(role.equals("user")) {
 	    		new UserHomePage().show(primaryStage);
@@ -48,13 +48,13 @@ public class WelcomeLoginPage {
 	    });
 	    
 	    // "Invite" button for admin to generate invitation codes
-	    if ("admin".equals(user.getRole())) {
-            Button inviteButton = new Button("Invite");
-            inviteButton.setOnAction(a -> {
-                new InvitationPage().show(databaseHelper, primaryStage);
-            });
-            layout.getChildren().add(inviteButton);
-        }
+//	    if ("admin".equals(user.getRole())) {
+//            Button inviteButton = new Button("Invite");
+//            inviteButton.setOnAction(a -> {
+//                new InvitationPage().show(databaseHelper, primaryStage);
+//            });
+//            layout.getChildren().add(inviteButton);
+//        }
 
 	    layout.getChildren().addAll(welcomeLabel,continueButton,quitButton);
 	    Scene welcomeScene = new Scene(layout, 800, 400);
