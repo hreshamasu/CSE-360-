@@ -47,7 +47,7 @@ public class DatabaseHelper {
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "userName VARCHAR(255) UNIQUE, "
 				+ "password VARCHAR(255), "
-				+ "role VARCHAR(20))";
+				+ "role VARCHAR(50))";
 		statement.execute(userTable);
 		
 		// Create the invitation codes table
@@ -147,7 +147,6 @@ public class DatabaseHelper {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-	    
 	    return code;
 	}
 	
