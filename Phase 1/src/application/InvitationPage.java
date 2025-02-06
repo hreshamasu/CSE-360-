@@ -2,6 +2,7 @@ package application;
 
 
 import databasePart1.*;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -76,16 +77,27 @@ public class InvitationPage {
         
         // Generate the invitation code using the databaseHelper and set it to the label
         showCodeButton.setOnAction(a -> {
+        	// If no role was selected, don't produce a code
+        	if (!admin && !student && !instructor && !staff && !reviewer) {
+        		return;
+        	}
             String invitationCode = databaseHelper.generateInvitationCode(admin, student, instructor, staff, reviewer);
             inviteCodeLabel.setText(invitationCode);
-
-	    // Set all user boolean values to false
+            
+    	    // Set all user boolean values to false
             admin = false;
             student = false;
             instructor = false;
             staff = false;
             reviewer = false;
         });
+        
+	    // Button to quit the application
+	    Button quitButton = new Button("Quit");
+	    quitButton.setOnAction(a -> {
+	    	databaseHelper.closeConnection();
+	    	Platform.exit(); // Exit the JavaFX application
+	    });
 	    
 
         layout.getChildren().addAll(userLabel, inviteAdmin, inviteStudent, inviteInstructor, inviteStaff, inviteReviewer, showCodeButton, inviteCodeLabel, quitButton);
