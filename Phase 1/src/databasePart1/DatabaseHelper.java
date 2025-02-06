@@ -34,7 +34,7 @@ public class DatabaseHelper {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			// statement.execute("DROP ALL OBJECTS");
+			//statement.execute("DROP ALL OBJECTS");
 
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
@@ -248,6 +248,9 @@ public class DatabaseHelper {
 	        pstmt.setString(1, userName);
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
+	        	if (rs.getString("oneTimePass") == null) {
+	        		return false;
+	        	}
 	        	if (rs.getString("oneTimePass").equals(password)) {
 	        		System.out.println(rs.getString("oneTimePass"));
 	        		
@@ -267,9 +270,8 @@ public class DatabaseHelper {
 	public void removeOneTimePass(String userName) {
 		String query = "UPDATE cse360users SET oneTimePass = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
-			// pstmt.setString(1, null);
+			pstmt.setString(1, null);
 			pstmt.setString(2, userName);
-			// new code
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -281,7 +283,6 @@ public class DatabaseHelper {
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1, password);
 			pstmt.setString(2, userName);
-			// new code
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
