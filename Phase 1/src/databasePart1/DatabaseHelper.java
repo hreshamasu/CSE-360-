@@ -249,6 +249,7 @@ public class DatabaseHelper {
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
 	        	if (rs.getString("oneTimePass").equals(password)) {
+	        		System.out.println(rs.getString("oneTimePass"));
 	        		
 	        		// If the password is valid, remove it
 	        		removeOneTimePass(userName);
@@ -267,6 +268,16 @@ public class DatabaseHelper {
 		String query = "UPDATE cse360users SET oneTimePass = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1, null);
+			pstmt.setString(2, userName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateUserPassword(String userName, String password) throws SQLException {
+		String query = "UPDATE cse360users SET password = ? WHERE userName = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, password);
 			pstmt.setString(2, userName);
 		} catch (SQLException e) {
 			e.printStackTrace();
