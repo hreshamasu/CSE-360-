@@ -39,6 +39,9 @@ public class UserLoginPage {
         Button loginButton = new Button("Login");
         
         loginButton.setOnAction(a -> {
+        	// Reset errorLabel
+        	errorLabel.setText(null);
+        	
         	// Retrieve user name and password
         	String userName = userNameField.getText();
         	String password = passwordField.getText();
@@ -48,21 +51,26 @@ public class UserLoginPage {
         	new UserNameRecognizer();
             String testedUserName = UserNameRecognizer.checkForValidUserName(userName);
             String testedPassword = PasswordEvaluator.evaluatePassword(password);
+            boolean validUser = true;
+            boolean validPass = true;
+            
             
             // If either user name or password is invalid, clear input box and return
             if (testedUserName != "") {
+            	validUser = false;
             	userNameField.clear();
             	System.out.println(testedUserName);
-            	if (testedPassword != "") {
-                	passwordField.clear();
-                	System.out.println(testedPassword);
-                }
-            	return;
+            	errorLabel.setText(errorLabel.getText() + "\n" + testedUserName); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
             }
             
             if (testedPassword != "") {
+            	validPass = false;
             	passwordField.clear();
             	System.out.println(testedPassword);
+            	errorLabel.setText(errorLabel.getText() + "\n" + testedPassword); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
+            }
+            
+            if (!(validUser && validPass)) {
             	return;
             }
             
@@ -93,10 +101,16 @@ public class UserLoginPage {
                 e.printStackTrace();
             } 
         });
+        
+        // Create a button to send user to OneTimeLogin page
+        Button oneTimePassButton = new Button("Use One Time Password");
+        oneTimePassButton.setOnAction(a -> {
+        	new OneTimeLoginPage(databaseHelper).show(primaryStage);
+        });
 
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(userNameField, passwordField, loginButton, errorLabel);
+        layout.getChildren().addAll(userNameField, passwordField, loginButton, oneTimePassButton, errorLabel);
 
         primaryStage.setScene(new Scene(layout, 800, 400));
         primaryStage.setTitle("User Login");
