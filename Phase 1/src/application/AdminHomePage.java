@@ -13,7 +13,7 @@ import databasePart1.*;
  * This page displays a simple welcome message for the admin.
  */
 
-public class AdminHomePage {
+public class AdminHomePage {	
 	/**
      * Displays the admin page in the provided primary stage.
      * @param primaryStage The primary stage where the scene will be displayed.
@@ -33,6 +33,12 @@ public class AdminHomePage {
 	    	new InvitationPage().show(databaseHelper, primaryStage);
 	    });
 	    
+	    // Button to create a one time password
+	    Button oneTimePassButton = new Button("Create a One Time Password");
+	    oneTimePassButton.setOnAction(a -> {
+	    	new OneTimePasswordPage().show(databaseHelper, primaryStage);
+	    });
+	    
 	    // Button to quit the application
 	    Button quitButton = new Button("Quit");
 	    quitButton.setOnAction(a -> {
@@ -41,7 +47,7 @@ public class AdminHomePage {
 	    });
 
 	    
-	    layout.getChildren().addAll(adminLabel, inviteButton, quitButton);
+	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, quitButton);
 	    Scene adminScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
