@@ -39,6 +39,12 @@ public class AdminHomePage {
 	    	new OneTimePasswordPage().show(databaseHelper, primaryStage);
 	    });
 	    
+	    // Button to delete a chosen user
+	    Button deleteUserButton = new Button("Delete a User");
+	    deleteUserButton.setOnAction(a -> {
+	    	new DeleteUserPage().show(databaseHelper, primaryStage);
+	    });
+	    
 	    // Button to quit the application
 	    Button quitButton = new Button("Quit");
 	    quitButton.setOnAction(a -> {
@@ -47,7 +53,7 @@ public class AdminHomePage {
 	    });
 
 	    
-	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, quitButton);
+	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, deleteUserButton, quitButton);
 	    Scene adminScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
