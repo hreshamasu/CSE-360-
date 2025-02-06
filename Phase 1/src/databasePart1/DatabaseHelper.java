@@ -34,7 +34,7 @@ public class DatabaseHelper {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			//statement.execute("DROP ALL OBJECTS");
+//			statement.execute("DROP ALL OBJECTS");
 
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
@@ -153,7 +153,7 @@ public class DatabaseHelper {
 	    return code;
 	}
 	
-	// Validates an invitation code to check if it is unused. TODO: UPDATE TO DEAL WITH DIFFERENT ROLES
+	// Validates an invitation code to check if it is unused.
 	public boolean validateInvitationCode(String code) {
 	    String query = "SELECT * FROM InvitationCodes WHERE code = ? AND isUsed = FALSE"; 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -262,7 +262,6 @@ public class DatabaseHelper {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-		
 		return false;
 	}
 	
@@ -278,11 +277,51 @@ public class DatabaseHelper {
 		}
 	}
 	
+	// Update the password associated with the userName
 	public void updateUserPassword(String userName, String password) throws SQLException {
 		String query = "UPDATE cse360users SET password = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
 			pstmt.setString(1, password);
 			pstmt.setString(2, userName);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Delete the user (userName) from the database
+	public String tryDeleteUser(String userName) throws SQLException {
+		// Check if the user exists 
+		if (doesUserExist(userName)) {
+			
+			String query = "SELECT role FROM cse360users WHERE username = ?";
+			try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+				pstmt.setString(1, userName);
+				ResultSet rs = pstmt.executeQuery();
+				
+				// If user has admin role, do not delete
+		        if (rs.next()) {
+		        		if (rs.getString("role") != "admin") {
+		        			deleteUser(userName);
+		        			return userName;
+		        		} else {
+		        			return "Cannot delete admin";
+		        		}
+		        }
+		        pstmt.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return "User does not exist";
+	}
+	
+	// Delete the user (userName) from the database
+	public void deleteUser(String userName) throws SQLException {
+		String query = "DELETE FROM cse360users WHERE username = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, userName);
+			System.out.println("Deleted " + userName);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
