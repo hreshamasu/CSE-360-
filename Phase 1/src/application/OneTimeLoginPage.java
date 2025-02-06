@@ -51,16 +51,16 @@ public class OneTimeLoginPage {
             String testedUserName = UserNameRecognizer.checkForValidUserName(userName);
             
             // If either user name or password is invalid, clear input box and return
-            if (testedUserName != "") {
+            if (!(databaseHelper.doesUserExist(userName))) {
             	userNameField.clear();
             	System.out.println(testedUserName);
-            	errorLabel.setText(errorLabel.getText() + "\n" + testedUserName); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
+            	errorLabel.setText(errorLabel.getText() + "\nuser does not exist"); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
             	return;
             }
             
             try {
             	if (databaseHelper.checkOneTimePass(userName, password)) {
-            		new UserLoginPage(databaseHelper).show(primaryStage);
+            		new PasswordResetPage(databaseHelper).show(primaryStage, userName);
             	} else {
             		// Display an error if the account does not exist
                     errorLabel.setText("invalid username or password");
