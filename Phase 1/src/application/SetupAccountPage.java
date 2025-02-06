@@ -16,6 +16,7 @@ import databasePart1.*;
 public class SetupAccountPage {
 	
     private final DatabaseHelper databaseHelper;
+    
     // DatabaseHelper to handle database operations.
     public SetupAccountPage(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
@@ -83,7 +84,7 @@ public class SetupAccountPage {
             		if(databaseHelper.validateInvitationCode(code)) {
             			
             			// Create a new user and register them in the database
-		            	User user=new User(userName, password, "user");
+		            	User user=new User(userName, password, databaseHelper.getRoleFromCode(code));
 		                databaseHelper.register(user);
 		                
 		             // Navigate to the Welcome Login Page
