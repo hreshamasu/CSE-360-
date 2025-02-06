@@ -47,7 +47,8 @@ public class DatabaseHelper {
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "userName VARCHAR(255) UNIQUE, "
 				+ "password VARCHAR(255), "
-				+ "role VARCHAR(50))";
+				+ "role VARCHAR(50),"
+				+ "oneTimePass VARCHAR(255))";
 		statement.execute(userTable);
 		
 		// Create the invitation codes table
@@ -221,6 +222,55 @@ public class DatabaseHelper {
 	        e.printStackTrace();
 	    }
 	    return null; // If no user exists or an error occurs
+	}
+	
+	// Generate a random 10-character password and assign it to a userName
+	public String createOneTimePass(String userName) {
+		String pass = UUID.randomUUID().toString().substring(0, 10);
+		String query = "UPDATE cse360users SET oneTimePass = ? WHERE userName = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, pass);
+			pstmt.setString(2, userName);
+			pstmt.executeUpdate();
+			
+			// Return the password
+			return pass;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	// Check if userName and oneTimePassword are a valid pair
+	public boolean checkOneTimePass(String userName, String password) throws SQLException {
+		String query = "SELECT oneTimePass FROM cse360users WHERE userName = ?"; 
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, userName);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	        	if (rs.getString("oneTimePass").equals(password)) {
+	        		
+	        		// If the password is valid, remove it
+	        		removeOneTimePass(userName);
+	        		return true;
+	        	}
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		
+		return false;
+	}
+	
+	// Remove the temporary password
+	public void removeOneTimePass(String userName) {
+		String query = "UPDATE cse360users SET oneTimePass = ? WHERE userName = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, null);
+			pstmt.setString(2, userName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Closes the database connection and statement.
