@@ -33,7 +33,7 @@ public class WelcomeLoginPage {
 	    	System.out.println(role);
 	    	
 	    	if(role.equals("admin")) {
-	    		new AdminHomePage(databaseHelper).show(primaryStage);
+	    		new AdminHomePage().show(databaseHelper, primaryStage);
 	    	}
 	    	else if(role.equals("student") || role.equals("instructor") || role.equals("staff") || role.equals("reviewer")) {
 	    		new UserHomePage().show(primaryStage);
@@ -46,15 +46,6 @@ public class WelcomeLoginPage {
 	    	databaseHelper.closeConnection();
 	    	Platform.exit(); // Exit the JavaFX application
 	    });
-	    
-	    // "Invite" button for admin to generate invitation codes
-//	    if ("admin".equals(user.getRole())) {
-//            Button inviteButton = new Button("Invite");
-//            inviteButton.setOnAction(a -> {
-//                new InvitationPage().show(databaseHelper, primaryStage);
-//            });
-//            layout.getChildren().add(inviteButton);
-//        }
 
 	    layout.getChildren().addAll(welcomeLabel,continueButton,quitButton);
 	    Scene welcomeScene = new Scene(layout, 800, 400);
