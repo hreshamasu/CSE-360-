@@ -135,7 +135,7 @@ public class DatabaseHelper {
 	// Generates a new invitation code for any number of roles and inserts it into the database.
 	public String generateInvitationCode(boolean admin, boolean student, boolean instructor, boolean staff, boolean reviewer) {
 	    String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code
-	    String query = "INSERT INTO InvitationCodes (code, admin, student, instructor, staff, reviewer) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	    String query = "INSERT INTO InvitationCodes (code, admin, student, instructor, staff, reviewer, generationTime) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
