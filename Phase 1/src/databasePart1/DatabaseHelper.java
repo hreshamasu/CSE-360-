@@ -187,6 +187,41 @@ public class DatabaseHelper {
 	        e.printStackTrace();
 	    }
 	}
+	
+	// Retrieves the role from an invitation code.
+	public String getRoleFromCode(String code) {
+		String query = "SELECT admin, student, instructor, staff, reviewer FROM InvitationCodes WHERE code = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, code);
+	        ResultSet rs = pstmt.executeQuery();
+	        
+	        // Checks boolean for each role
+	        if (rs.next()) {
+	        	boolean admin = rs.getBoolean("admin");
+                boolean student = rs.getBoolean("student");
+                boolean instructor = rs.getBoolean("instructor");
+                boolean staff = rs.getBoolean("staff");
+                boolean reviewer = rs.getBoolean("reviewer");
+                
+                // Add each role to a string to return
+                String role = "";
+                if (admin) role += "admin, ";
+                if (student) role += "student, ";
+                if (instructor) role += "instructor, ";
+                if (staff) role += "staff, ";
+                if (reviewer) role += "reviewer, ";
+                
+                // Return the role if user exists
+                System.out.println(role.substring(0, role.length()-2));
+                return role.substring(0, role.length()-2); 
+	        } else {
+	        	System.out.println("Error: No role for code");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return null; // If no user exists or an error occurs
+	}
 
 	// Closes the database connection and statement.
 	public void closeConnection() {
