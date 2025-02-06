@@ -1,5 +1,6 @@
 package application;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -13,18 +14,11 @@ import databasePart1.*;
  */
 
 public class AdminHomePage {
-	
-	private final DatabaseHelper databaseHelper;
-	
-	public AdminHomePage(DatabaseHelper databaseHelper) {
-        this.databaseHelper = databaseHelper;
-    }
-	
 	/**
      * Displays the admin page in the provided primary stage.
      * @param primaryStage The primary stage where the scene will be displayed.
      */
-    public void show(Stage primaryStage) {
+    public void show(DatabaseHelper databaseHelper, Stage primaryStage) {
     	VBox layout = new VBox();
     	
 	    layout.setStyle("-fx-alignment: center; -fx-padding: 20;");
@@ -45,6 +39,7 @@ public class AdminHomePage {
 	    	databaseHelper.closeConnection();
 	    	Platform.exit(); // Exit the JavaFX application
 	    });
+
 	    
 	    layout.getChildren().addAll(adminLabel, inviteButton, quitButton);
 	    Scene adminScene = new Scene(layout, 800, 400);
