@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
-
+import java.sql.Timestamp;
 import application.User;
 
 
@@ -58,7 +58,8 @@ public class DatabaseHelper {
 	            + "student BOOLEAN DEFAULT FALSE, "
 	            + "instructor BOOLEAN DEFAULT FALSE, "
 	            + "staff BOOLEAN DEFAULT FALSE, "
-	            + "reviewer BOOLEAN DEFAULT FALSE)";
+	            + "reviewer BOOLEAN DEFAULT FALSE, "
+	            + "generationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 	    statement.execute(invitationCodesTable);
 	}
 
@@ -134,7 +135,7 @@ public class DatabaseHelper {
 	// Generates a new invitation code for any number of roles and inserts it into the database.
 	public String generateInvitationCode(boolean admin, boolean student, boolean instructor, boolean staff, boolean reviewer) {
 	    String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code
-	    String query = "INSERT INTO InvitationCodes (code, admin, student, instructor, staff, reviewer) VALUES (?, ?, ?, ?, ?, ?)";
+	    String query = "INSERT INTO InvitationCodes (code, admin, student, instructor, staff, reviewer) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
@@ -143,6 +144,7 @@ public class DatabaseHelper {
 	        pstmt.setBoolean(4, instructor);
 	        pstmt.setBoolean(5, staff);
 	        pstmt.setBoolean(6, reviewer);
+	        pstmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -157,9 +159,17 @@ public class DatabaseHelper {
 	        pstmt.setString(1, code);
 	        ResultSet rs = pstmt.executeQuery();
 	        if (rs.next()) {
+	        	Timestamp generationTime = rs.getTimestamp("generationTime");
+                long currentTimeMillis = System.currentTimeMillis();
+                long generationTimeMillis = generationTime.getTime();
+
 	            // Mark the code as used
 	            markInvitationCodeAsUsed(code);
-	            return true;
+	            
+	            // Check if code was created less than an hour ago
+	            if ((currentTimeMillis - generationTimeMillis) <= 3600000) {
+	            	return true;
+	            }
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
