@@ -92,6 +92,12 @@ public class InvitationPage {
             reviewer = false;
         });
         
+        // Button to go back to admin home page
+        Button adminHomeButton = new Button("Back to Home");
+	    adminHomeButton.setOnAction(a -> {
+	    	new AdminHomePage().show(databaseHelper, primaryStage);
+	    });
+        
 	    // Button to quit the application
 	    Button quitButton = new Button("Quit");
 	    quitButton.setOnAction(a -> {
@@ -100,7 +106,7 @@ public class InvitationPage {
 	    });
 	    
 
-        layout.getChildren().addAll(userLabel, inviteAdmin, inviteStudent, inviteInstructor, inviteStaff, inviteReviewer, showCodeButton, inviteCodeLabel, quitButton);
+        layout.getChildren().addAll(userLabel, inviteAdmin, inviteStudent, inviteInstructor, inviteStaff, inviteReviewer, showCodeButton, inviteCodeLabel, adminHomeButton, quitButton);
 	    Scene inviteScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
