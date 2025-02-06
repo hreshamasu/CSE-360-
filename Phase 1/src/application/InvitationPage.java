@@ -74,16 +74,12 @@ public class InvitationPage {
 	    Label inviteCodeLabel = new Label(""); ;
         inviteCodeLabel.setStyle("-fx-font-size: 14px; -fx-font-style: italic;");
         
+        // Generate the invitation code using the databaseHelper and set it to the label
         showCodeButton.setOnAction(a -> {
-        	// Generate the invitation code using the databaseHelper and set it to the label
-        	System.out.println(admin);
-        	System.out.println(student);
-        	System.out.println(instructor);
-        	System.out.println(staff);
-        	System.out.println(reviewer);
             String invitationCode = databaseHelper.generateInvitationCode(admin, student, instructor, staff, reviewer);
             inviteCodeLabel.setText(invitationCode);
-            
+
+	    // Set all user boolean values to false
             admin = false;
             student = false;
             instructor = false;
