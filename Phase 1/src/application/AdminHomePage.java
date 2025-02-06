@@ -33,12 +33,20 @@ public class AdminHomePage {
 	    Label adminLabel = new Label("Hello, Admin!");
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 	    
+	    // Button to travel to invite page
 	    Button inviteButton = new Button("Invite");
 	    inviteButton.setOnAction(a -> {
 	    	new InvitationPage().show(databaseHelper, primaryStage);
 	    });
-
-	    layout.getChildren().addAll(adminLabel, inviteButton);
+	    
+	    // Button to quit the application
+	    Button quitButton = new Button("Quit");
+	    quitButton.setOnAction(a -> {
+	    	databaseHelper.closeConnection();
+	    	Platform.exit(); // Exit the JavaFX application
+	    });
+	    
+	    layout.getChildren().addAll(adminLabel, inviteButton, quitButton);
 	    Scene adminScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
