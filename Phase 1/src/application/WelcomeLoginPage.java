@@ -35,7 +35,7 @@ public class WelcomeLoginPage {
 	    	if(role.equals("admin")) {
 	    		new AdminHomePage(databaseHelper).show(primaryStage);
 	    	}
-	    	else if(role.equals("user")) {
+	    	else if(role.equals("student") || role.equals("instructor") || role.equals("staff") || role.equals("reviewer")) {
 	    		new UserHomePage().show(primaryStage);
 	    	}
 	    });
