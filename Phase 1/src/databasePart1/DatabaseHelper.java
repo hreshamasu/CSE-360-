@@ -229,6 +229,7 @@ public class DatabaseHelper {
 		String pass = UUID.randomUUID().toString().substring(0, 10);
 		String query = "UPDATE cse360users SET oneTimePass = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
 			pstmt.setString(1, pass);
 			pstmt.setString(2, userName);
 			pstmt.executeUpdate();
@@ -245,8 +246,10 @@ public class DatabaseHelper {
 	public boolean checkOneTimePass(String userName, String password) throws SQLException {
 		String query = "SELECT oneTimePass FROM cse360users WHERE userName = ?"; 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	    	
 	        pstmt.setString(1, userName);
 	        ResultSet rs = pstmt.executeQuery();
+	        
 	        if (rs.next()) {
 	        	if (rs.getString("oneTimePass") == null) {
 	        		return false;
@@ -269,9 +272,11 @@ public class DatabaseHelper {
 	public void removeOneTimePass(String userName) {
 		String query = "UPDATE cse360users SET oneTimePass = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
 			pstmt.setString(1, null);
 			pstmt.setString(2, userName);
 			pstmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -281,9 +286,11 @@ public class DatabaseHelper {
 	public void updateUserPassword(String userName, String password) throws SQLException {
 		String query = "UPDATE cse360users SET password = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
 			pstmt.setString(1, password);
 			pstmt.setString(2, userName);
 			pstmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -326,6 +333,24 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String listUsers() throws SQLException {
+		String query = "SELECT username, role FROM cse360users"; // ADD NAME AND EMAIL WHEN NECESSARY
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			String result = "";
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				result = result + "UserName: " + rs.getString("username") + ", Role(s): " + rs.getString("role") + "\n";
+			}
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	// Closes the database connection and statement.
