@@ -3,6 +3,7 @@ package application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -31,16 +32,17 @@ public class UserLoginPage {
         passwordField.setPromptText("Enter Password");
         passwordField.setMaxWidth(250);
         
-        // Label to display error messages
-        Label errorLabel = new Label();
-        errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+        // Label to display error messages for invalid input or registration issues
+        Label userpassErrors = new Label("\n");
+        userpassErrors.setStyle("-fx-font-size: 16px; -fx-text-fill: rgb(255,100,100);");
+        userpassErrors.setTextAlignment(TextAlignment.CENTER);
 
 
         Button loginButton = new Button("Login");
         
         loginButton.setOnAction(a -> {
         	// Reset errorLabel
-        	errorLabel.setText(null);
+        	userpassErrors.setText("");
         	
         	// Retrieve user name and password
         	String userName = userNameField.getText();
@@ -60,14 +62,14 @@ public class UserLoginPage {
             	validUser = false;
             	userNameField.clear();
             	System.out.println(testedUserName);
-            	errorLabel.setText(errorLabel.getText() + "\n" + testedUserName); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
+            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedUserName); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
             }
             
             if (testedPassword != "") {
             	validPass = false;
             	passwordField.clear();
             	System.out.println(testedPassword);
-            	errorLabel.setText(errorLabel.getText() + "\n" + testedPassword); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
+            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedPassword); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
             }
             
             if (!(validUser && validPass)) {
@@ -88,12 +90,12 @@ public class UserLoginPage {
             		}
             		else {
             			// Display an error if the login fails
-                        errorLabel.setText("Error logging in");
+            			userpassErrors.setText("Error logging in");
             		}
             	}
             	else {
             		// Display an error if the account does not exist
-                    errorLabel.setText("user account doesn't exists");
+            		userpassErrors.setText("Account doesn't exist");
             	}
             	
             } catch (SQLException e) {
@@ -110,7 +112,7 @@ public class UserLoginPage {
 
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(userNameField, passwordField, loginButton, oneTimePassButton, errorLabel);
+        layout.getChildren().addAll(userNameField, passwordField, loginButton, oneTimePassButton, userpassErrors);
 
         primaryStage.setScene(new Scene(layout, 800, 400));
         primaryStage.setTitle("User Login");
