@@ -61,7 +61,7 @@ public class UserNameRecognizer {
 		// Check to ensure that there is input to process
 		if(input.length() <= 0) {
 			userNameRecognizerIndexofError = 0;	// Error at first character;
-			return "\n*** ERROR *** The input is empty";
+			return "\nEnter a UserName";
 		}
 		
 		// The local variables used to perform the Finite State Machine simulation
@@ -193,13 +193,13 @@ public class UserNameRecognizer {
 		// makes it possible for this code to display a very specific error message to improve the
 		// user experience.
 		userNameRecognizerIndexofError = currentCharNdx;	// Set index of a possible error;
-		userNameRecognizerErrorMessage = "\n*** ERROR *** ";
+		userNameRecognizerErrorMessage = "\n";
 		
 		// The following code is a slight variation to support just console output.
 		switch (state) {
 		case 0:
 			// State 0 is not a final state, so we can return a very specific error message
-			userNameRecognizerErrorMessage += "A UserName must start with A-Z or a-z.\n";
+			userNameRecognizerErrorMessage += "UserName must start with A-Z or a-z.\n";
 			return userNameRecognizerErrorMessage;
 
 		case 1:
@@ -208,19 +208,19 @@ public class UserNameRecognizer {
 
 			if (userNameSize < 4) {
 				// UserName is too small
-				userNameRecognizerErrorMessage += "A UserName must have at least 4 characters.\n";
+				userNameRecognizerErrorMessage += "UserName must have at least 4 characters.\n";
 				return userNameRecognizerErrorMessage;
 			}
 			else if (userNameSize > 16) {
 				// UserName is too long
 				userNameRecognizerErrorMessage += 
-					"A UserName must have no more than 16 character.\n";
+					"UserName must have no more than 16 character.\n";
 				return userNameRecognizerErrorMessage;
 			}
 			else if (currentCharNdx < input.length()) {
 				// There are characters remaining in the input, so the input is not valid
 				userNameRecognizerErrorMessage += 
-					"A UserName character may only contain the characters A-Z, a-z, 0-9.\n";
+					"UserName cannot contain special characters\n";
 				return userNameRecognizerErrorMessage;
 			}
 			else {
