@@ -47,7 +47,7 @@ public class DatabaseHelper {
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "userName VARCHAR(255) UNIQUE, "
 				+ "password VARCHAR(255), "
-				+ "role VARCHAR(50),"
+				+ "role VARCHAR(255),"
 				+ "oneTimePass VARCHAR(255))";
 		statement.execute(userTable);
 		
@@ -222,6 +222,29 @@ public class DatabaseHelper {
 	        e.printStackTrace();
 	    }
 	    return null; // If no user exists or an error occurs
+	}
+	
+	public void assignRolesFromCodeToUser(String userName, String code) throws SQLException {
+	    // Get the roles from the code
+		String rolesFromCode = getRoleFromCode(code);
+		
+		//enter roles into table as comma separated string
+		String updateRoleQuery = "UPDATE cse360users SET role = ? WHERE userName = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(updateRoleQuery)) {
+	        pstmt.setString(1, rolesFromCode);
+	        pstmt.setString(2, userName);
+	        pstmt.executeUpdate();
+	    }catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    
+	}
+	
+	public String[] roleToArray(String role) {
+		String[] roleArray = role.split(", ");
+		
+		return roleArray;
 	}
 	
 	// Generate a random 10-character password and assign it to a userName
