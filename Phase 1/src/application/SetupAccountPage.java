@@ -3,6 +3,7 @@ package application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -41,12 +42,15 @@ public class SetupAccountPage {
         inviteCodeField.setMaxWidth(250);
         
         // Label to display error messages for invalid input or registration issues
-        Label errorLabel = new Label();
-        errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+        Label userpassErrors = new Label("\n");
+        userpassErrors.setStyle("-fx-font-size: 16px; -fx-text-fill: rgb(255,100,100);");
+        userpassErrors.setTextAlignment(TextAlignment.CENTER);
 
         Button setupButton = new Button("Setup");
         
         setupButton.setOnAction(a -> {
+        	userpassErrors.setText("");
+        	
         	// Retrieve user name and password
         	String userName = userNameField.getText();
         	String password = passwordField.getText();
@@ -56,21 +60,26 @@ public class SetupAccountPage {
         	new UserNameRecognizer();
             String testedUserName = UserNameRecognizer.checkForValidUserName(userName);
             String testedPassword = PasswordEvaluator.evaluatePassword(password);
+            boolean validUser = true;
+            boolean validPass = true;
+            
             
             // If either user name or password is invalid, clear input box and return
             if (testedUserName != "") {
+            	validUser = false;
             	userNameField.clear();
             	System.out.println(testedUserName);
-            	if (testedPassword != "") {
-                	passwordField.clear();
-                	System.out.println(testedPassword);
-                }
-            	return;
+            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedUserName);
             }
             
             if (testedPassword != "") {
+            	validPass = false;
             	passwordField.clear();
             	System.out.println(testedPassword);
+            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedPassword);
+            }
+            
+            if (!(validUser && validPass)) {
             	return;
             }
             
@@ -91,11 +100,11 @@ public class SetupAccountPage {
 		                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
             		}
             		else {
-            			errorLabel.setText("Please enter a valid invitation code");
+            			userpassErrors.setText("Please enter a valid invitation code");
             		}
             	}
             	else {
-            		errorLabel.setText("This useruserName is taken!!.. Please use another to setup an account");
+            		userpassErrors.setText("This useruserName is taken!!.. Please use another to setup an account");
             	}
             	
             } catch (SQLException e) {
@@ -106,7 +115,7 @@ public class SetupAccountPage {
 
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(userNameField, passwordField,inviteCodeField, setupButton, errorLabel);
+        layout.getChildren().addAll(userNameField, passwordField, inviteCodeField, setupButton, userpassErrors);
 
         primaryStage.setScene(new Scene(layout, 800, 400));
         primaryStage.setTitle("Account Setup");
