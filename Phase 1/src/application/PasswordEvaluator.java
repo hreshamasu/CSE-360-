@@ -57,7 +57,7 @@ public class PasswordEvaluator {
 		inputLine = input;					// Save the reference to the input line as a global
 		currentCharNdx = 0;					// The index of the current character
 		
-		if(input.length() <= 0) return "*** Error *** The password is empty!";
+		if(input.length() <= 0) return "Enter a Password";
 		
 		// The input is not empty, so we can access the first character
 		currentChar = input.charAt(0);		// The current character from the above indexed position
@@ -91,7 +91,7 @@ public class PasswordEvaluator {
 			} else {
 				passwordIndexofError = currentCharNdx;
 				foundOther = true;
-				return "*** Error *** An invalid character has been found!";
+				return "Password contains an invalid character";
 			}
 			if (currentCharNdx >= 7) {
 				foundLongEnough = true;
@@ -115,29 +115,25 @@ public class PasswordEvaluator {
 		String errMessage = "";
 		
 		if (!foundUpperCase)
-			errMessage += "Upper case; ";
+			errMessage += "Password must contain a capital letter\n";
 		
 		if (!foundLowerCase)
-			errMessage += "Lower case; ";
+			errMessage += "Password must contain a lowercase letter\n";
 		
 		if (!foundNumericDigit)
-			errMessage += "Numeric digits; ";
+			errMessage += "Password must contain a number\n";
 			
 		if (!foundSpecialChar)
-			errMessage += "Special character; ";
+			errMessage += "Password must contain a special character\n";
 			
 		if (!foundLongEnough)
-			errMessage += "Long Enough; ";
-		
-		if (foundOther) {
-			errMessage += "Other character; ";
-		}
+			errMessage += "Password must contain at least 8 characters";
 		
 		if (errMessage == "") {
 			return "";
 		}
 		
 		passwordIndexofError = currentCharNdx;
-		return errMessage + "conditions were not satisfied";	
+		return errMessage;	
 	}
 }
