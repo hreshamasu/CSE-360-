@@ -6,6 +6,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import databasePart1.*;
+import java.util.Arrays;
 
 /**
  * The WelcomeLoginPage class displays a welcome screen for authenticated users.
@@ -31,13 +32,38 @@ public class WelcomeLoginPage {
 	    continueButton.setOnAction(a -> {
 	    	String role =user.getRole();
 	    	System.out.println(role);
+	    	String[] roleList = databaseHelper.roleToArray(role); //gets role list as an array
+	    	int numberOfRoles = roleList.length;
 	    	
-	    	if(role.equals("admin")) {
-	    		new AdminHomePage().show(databaseHelper, primaryStage);
+	    	//if statement checks if more than 1 role assigned if <2 sends checks for role assigned
+	    	//then sends them to correct page
+	    	if(numberOfRoles < 2) {
+	    		String onlyRole = String.valueOf(roleList[0]);
+	    		
+	    		switch (onlyRole) {
+	    		    case "admin":
+	    		    	new AdminHomePage().show(databaseHelper, primaryStage);
+	    		    	break;
+	    		    case "student":
+	    		    	new StudentHomePage().show(databaseHelper, primaryStage);
+	    		    	break;
+	    		    case "staff":
+	    		    	new StaffHomePage().show(databaseHelper, primaryStage);
+	    		    	break;
+	    		    case "instructor":
+	    		    	new InstructorHomePage().show(databaseHelper, primaryStage);
+	    		    	break;
+	    		    case "reviewer":
+	    		    	new ReviewerHomePage().show(databaseHelper, primaryStage);
+	    		}
+	    		
 	    	}
-	    	else if(role.equals("student") || role.equals("instructor") || role.equals("staff") || role.equals("reviewer")) {
-	    		new UserHomePage().show(databaseHelper, primaryStage);
+	    	else {
+	    		new RoleSelectionPage().show(databaseHelper, primaryStage, user);
+	    		
 	    	}
+	    	
+	
 	    });
 	    
 	    // Button to quit the application
