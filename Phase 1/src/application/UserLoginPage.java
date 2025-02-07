@@ -80,13 +80,15 @@ public class UserLoginPage {
             	User user=new User(userName, password, "");
             	WelcomeLoginPage welcomeLoginPage = new WelcomeLoginPage(databaseHelper);
             	
-            	// Retrieve the user's role from the database using userName
-            	String role = databaseHelper.getUserRole(userName);
+            	// Retrieve the user's roles from the database using userName
+            	String role = databaseHelper. getUserRole(userName);
             	
             	if(role!=null) {
             		user.setRole(role);
             		if(databaseHelper.login(user)) {
+            			
             			welcomeLoginPage.show(primaryStage,user);
+            			
             		}
             		else {
             			// Display an error if the login fails
