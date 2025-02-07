@@ -51,6 +51,12 @@ public class AdminHomePage {
 	    	new DeleteUserPage().show(databaseHelper, primaryStage);
 	    });
 	    
+	    // Button to logout and navigate back to login page
+	    Button logoutButton = new Button("Logout");
+	    logoutButton.setOnAction(a -> {
+	    	new SetupLoginSelectionPage(databaseHelper).show(primaryStage);
+	    });
+	    
 	    // Button to quit the application
 	    Button quitButton = new Button("Quit");
 	    quitButton.setOnAction(a -> {
@@ -59,7 +65,7 @@ public class AdminHomePage {
 	    });
 
 	    
-	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, listUsersButton, deleteUserButton, quitButton);
+	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, listUsersButton, deleteUserButton, logoutButton, quitButton);
 	    Scene adminScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
