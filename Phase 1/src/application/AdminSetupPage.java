@@ -35,10 +35,11 @@ public class AdminSetupPage {
         Button setupButton = new Button("Setup");
         
         Label userpassErrors = new Label("\n");
-        userpassErrors.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        userpassErrors.setStyle("-fx-font-size: 16px; -fx-text-fill: rgb(255,100,100);");
         userpassErrors.setTextAlignment(TextAlignment.CENTER);
         
         setupButton.setOnAction(a -> {
+        	userpassErrors.setText("");
         	// Retrieve user name and password
         	String userName = userNameField.getText();
         	String password = passwordField.getText();
@@ -57,14 +58,14 @@ public class AdminSetupPage {
             	validUser = false;
             	userNameField.clear();
             	System.out.println(testedUserName);
-            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedUserName); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
+            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedUserName);
             }
             
             if (testedPassword != "") {
             	validPass = false;
             	passwordField.clear();
             	System.out.println(testedPassword);
-            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedPassword); // MAKE THE PRINTED VALUES MATCH DOCUMENTATION
+            	userpassErrors.setText(userpassErrors.getText() + "\n" + testedPassword);
             }
             
             if (!(validUser && validPass)) {
