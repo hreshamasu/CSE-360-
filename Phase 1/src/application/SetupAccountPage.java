@@ -93,12 +93,11 @@ public class SetupAccountPage {
             		if(databaseHelper.validateInvitationCode(code)) {
             			
             			// Create a new user and register them in the database
-		            	User user=new User(userName, password, databaseHelper.getUserRole(userName));
+		            	User user=new User(userName, password, databaseHelper.getRoleFromCode(code));
 		                databaseHelper.register(user);
 		                databaseHelper.assignRolesFromCodeToUser(userName,code);
 		                
 		             // Navigate to the Welcome Login Page
-		                
 		                new WelcomeLoginPage(databaseHelper).show(primaryStage,user);
             		}
             		else {
