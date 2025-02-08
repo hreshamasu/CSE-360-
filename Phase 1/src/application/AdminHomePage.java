@@ -39,7 +39,13 @@ public class AdminHomePage {
 	    	new OneTimePasswordPage().show(databaseHelper, primaryStage);
 	    });
 	    
-	    // Button to delete a chosen user
+	    //Button to change user roles
+	    Button changeRolesButton = new Button("Change User Roles");
+	    changeRolesButton.setOnAction(a -> {
+	    	new ChangeRolesPage().show(databaseHelper, primaryStage);
+	    });
+	    
+	    // Button to list users
 	    Button listUsersButton = new Button("List all Users");
 	    listUsersButton.setOnAction(a -> {
 	    	new ListUsersPage().show(databaseHelper, primaryStage);
@@ -65,7 +71,7 @@ public class AdminHomePage {
 	    });
 
 	    
-	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, listUsersButton, deleteUserButton, logoutButton, quitButton);
+	    layout.getChildren().addAll(adminLabel, inviteButton, oneTimePassButton, changeRolesButton, listUsersButton, deleteUserButton, logoutButton, quitButton);
 	    Scene adminScene = new Scene(layout, 800, 400);
 
 	    // Set the scene to primary stage
