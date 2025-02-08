@@ -214,7 +214,7 @@ public class DatabaseHelper {
                 
                 // Return the role if user exists
                 System.out.println(role.substring(0, role.length()-2));
-                return role.substring(0, role.length()-2); 
+                return role.substring(0, role.length()-2);
 	        } else {
 	        	System.out.println("Error: No role for code");
 	        }
@@ -227,7 +227,7 @@ public class DatabaseHelper {
 	public void assignRolesFromCodeToUser(String userName, String code) throws SQLException {
 	    // Get the roles from the code
 		String rolesFromCode = getRoleFromCode(code);
-		
+
 		//enter roles into table as comma separated string
 		String updateRoleQuery = "UPDATE cse360users SET role = ? WHERE userName = ?";
 	    try (PreparedStatement pstmt = connection.prepareStatement(updateRoleQuery)) {
@@ -237,15 +237,14 @@ public class DatabaseHelper {
 	    }catch (SQLException e) {
 	        e.printStackTrace();
 	    }
-	    
-	    
 	}
-	
+
 	public String[] roleToArray(String role) {
 		String[] roleArray = role.split(", ");
-		
+
 		return roleArray;
 	}
+
 	
 	// Generate a random 10-character password and assign it to a userName
 	public String createOneTimePass(String userName) {
@@ -374,6 +373,20 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}
 		return "";
+	}
+	
+	public void changeRoles(String userName, String roles) throws SQLException {
+		System.out.println(roles);
+		String query = "UPDATE cse360users SET role = ? WHERE userName = ?";
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			
+			pstmt.setString(1, roles);
+			pstmt.setString(2, userName);
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Closes the database connection and statement.
