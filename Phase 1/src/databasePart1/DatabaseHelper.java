@@ -357,6 +357,7 @@ public class DatabaseHelper {
 		}
 	}
 	
+	// List all users and info
 	public String listUsers() throws SQLException {
 		String query = "SELECT username, role FROM cse360users"; // ADD NAME AND EMAIL WHEN NECESSARY
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -375,8 +376,46 @@ public class DatabaseHelper {
 		return "";
 	}
 	
+	// Change user roles
 	public void changeRoles(String userName, String roles) throws SQLException {
-		System.out.println(roles);
+		
+		// If user is last admin, do not accept new roles
+		String query1 = "SELECT role FROM cse360users WHERE userName = ?";
+		int counter = 0;
+		
+		try(PreparedStatement pstmt = connection.prepareStatement(query1)) {
+			
+			pstmt.setString(1, userName);
+			
+			String oldRoles = "";
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				oldRoles = rs.getString("role");
+			}
+			
+			if (oldRoles.contains("admin") && !(oldRoles.isEmpty())) {
+				String query2 = "SELECT role FROM cse360users";
+				try(PreparedStatement pstmt2 = connection.prepareStatement(query2)) {
+					
+					ResultSet rs2 = pstmt2.executeQuery();
+					while (rs2.next()) {
+						if (rs2.getString("role").contains("admin")) {
+							counter++;
+						}
+					}
+					
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if (counter < 2) {
+			return;
+		}
 		String query = "UPDATE cse360users SET role = ? WHERE userName = ?";
 		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
 			
