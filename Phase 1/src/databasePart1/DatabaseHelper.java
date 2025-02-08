@@ -381,7 +381,7 @@ public class DatabaseHelper {
 		
 		// If user is last admin, do not accept new roles
 		String query1 = "SELECT role FROM cse360users WHERE userName = ?";
-		int counter = 0;
+		int counter = 2;
 		
 		try(PreparedStatement pstmt = connection.prepareStatement(query1)) {
 			
@@ -394,6 +394,7 @@ public class DatabaseHelper {
 			}
 			
 			if (oldRoles.contains("admin") && !(oldRoles.isEmpty())) {
+				counter = 0;
 				String query2 = "SELECT role FROM cse360users";
 				try(PreparedStatement pstmt2 = connection.prepareStatement(query2)) {
 					
@@ -401,6 +402,9 @@ public class DatabaseHelper {
 					while (rs2.next()) {
 						if (rs2.getString("role").contains("admin")) {
 							counter++;
+							System.out.println("yup" + rs2.getString("role"));
+						} else {
+							System.out.println("nope" + rs2.getString("role"));
 						}
 					}
 					
