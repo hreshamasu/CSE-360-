@@ -1,7 +1,8 @@
-## Team
+# Team
 
 Zoom link:
+
 password: 
 
 
-# standup make up for ...
+## standup make up for ...
