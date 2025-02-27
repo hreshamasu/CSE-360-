@@ -38,6 +38,7 @@ public class QuestionsAnswersPage {
     final User user;
     final DatabaseHelper databaseHelper;
     
+    private boolean connected = false;
     
     public QuestionsAnswersPage(Stage primaryStage, DatabaseHelper databaseHelper, User user) {
     	this.databaseHelper = databaseHelper;
@@ -48,12 +49,15 @@ public class QuestionsAnswersPage {
     	
     // Show the main page
     public void show(Stage primaryStage) {
-    	
-    	try {
-    		qaDatabase.connectToQuestionAnswerDatabase();
-    	} catch (SQLException e) {
-    		e.printStackTrace();
+    	if (!connected) {
+    		try {
+    			qaDatabase.connectToQuestionAnswerDatabase();
+    			connected = true;
+    		} catch (SQLException e) {
+    			e.printStackTrace();
+    		}
     	}
+    	
     	userName = user.getUserName();
     	
         // Initialize vbox for right side of window
@@ -90,7 +94,6 @@ public class QuestionsAnswersPage {
         // Fill posts vbox with all posted questions
         try {
             for (int i = qaDatabase.numQuestions(); i > 0; i--) {
-            	System.out.println("test\n");
 
                 // Skip to next question if current was deleted
                 if (qaDatabase.isDeleted(i)) {
@@ -111,7 +114,7 @@ public class QuestionsAnswersPage {
                 
                 // If the current question is resolved, add a tag
                 if (qaDatabase.isResolved(i)) {
-                	postButton.setText("RESOLVED " + postButton.getText());
+                	postButton.setText(postButton.getText() + " *Answered*");
                 }
                 
                 postButton.setMinWidth(250);
@@ -208,12 +211,40 @@ public class QuestionsAnswersPage {
         List<String[]> answers = qaDatabase.getAnswers(id);
 
         // Loop through answers and create user name and content labels for each
-        for (String[] answer : answers) {
+        for (int i = 0; i < answers.size(); i++) {
+        	final int answerCount = i;
+        	String[] answer = answers.get(i);
+        	
             Label answerUserLabel = new Label(answer[0]);
             answerUserLabel.setWrapText(true);
+            
             Label answerContentLabel = new Label("     " + answer[1]);
             answerContentLabel.setWrapText(true);
-            vbox.getChildren().addAll(answerUserLabel, answerContentLabel);
+            
+            int answerID = qaDatabase.getAnswerID(id, answerCount);
+            if (qaDatabase.doesAnswerResolve(answerID)) {
+            	answerUserLabel.setStyle("-fx-font-weight: bold;");
+            	answerContentLabel.setStyle("-fx-font-weight: bold;");
+            }
+            
+            if (qaDatabase.doesUserOwnQuestion(id, userName)) {
+            	Button answeredButton = new Button("Answers the Question");
+            	
+            	answeredButton.setOnAction(a -> {
+            		
+            		
+		    		if (answerID == 0) {
+		    			System.out.println("Error in getAnswerID\n");
+		    			return;
+		    		}
+		        	qaDatabase.resolveQuestion(id);
+		        	qaDatabase.answerResolves(id, answerID);
+		            show(primaryStage);
+                });
+            	vbox.getChildren().addAll(answerUserLabel, answerContentLabel, answeredButton);
+            } else {
+            	vbox.getChildren().addAll(answerUserLabel, answerContentLabel);
+            }
         }
 
         // Text area to enter the answer content
