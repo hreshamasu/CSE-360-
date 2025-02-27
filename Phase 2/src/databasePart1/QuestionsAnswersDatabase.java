@@ -56,6 +56,7 @@ public class QuestionsAnswersDatabase {
 				+ "qID INT,"
 				+ "userName VARCHAR(255), "
 				+ "content TEXT, "
+				+ "resolves BOOLEAN DEFAULT FALSE ,"
 				+ "FOREIGN KEY (qID) REFERENCES questions(id) ON DELETE CASCADE)";
 		statement.execute(answerTable);
 	}
@@ -238,48 +239,114 @@ public class QuestionsAnswersDatabase {
 	
 	
 	// Return the number of answers for any question
-		public int numAnswers(int qID) throws SQLException {
-			String q = "SELECT COUNT(*) AS count FROM answers WHERE qID = ?";
-			
-			try (PreparedStatement pstmt = connection.prepareStatement(q)) {
-				pstmt.setInt(1, qID);
-				ResultSet rs = pstmt.executeQuery();
-				if (rs.next()) {
-					return rs.getInt("count");
-				}
-			}
-			return 0;
-		}
+	public int numAnswers(int qID) throws SQLException {
+		String q = "SELECT COUNT(*) AS count FROM answers WHERE qID = ?";
 		
-		
-		// Adds an answer to a question
-		public void addAnswer(Answer answer) throws SQLException{
-			String q = "INSERT INTO answers (qID, userName, content) VALUES (?, ?, ?)";
-			
-			try (PreparedStatement pstmt = connection.prepareStatement(q)) {
-				pstmt.setInt(1, answer.getQID());
-				pstmt.setString(2, answer.getUserName());
-				pstmt.setString(3, answer.getContent());
-				pstmt.executeUpdate();
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, qID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("count");
 			}
 		}
+		return 0;
+	}
+	
+	
+	// Adds an answer to a question
+	public void addAnswer(Answer answer) throws SQLException{
+		String q = "INSERT INTO answers (qID, userName, content) VALUES (?, ?, ?)";
 		
-		
-		// Return an array list of arrays of strings containing the user name and content associated with answers
-		public List<String[]> getAnswers(int qID) {
-			String q = "SELECT userName, content FROM answers WHERE qID = ?";
-			List<String[]> answers = new ArrayList<>();
-			
-			try (PreparedStatement pstmt = connection.prepareStatement(q)) {
-				pstmt.setInt(1, qID);
-				ResultSet rs = pstmt.executeQuery();
-				while (rs.next()) {
-					answers.add(new String[] {rs.getString("userName"), rs.getString("content")});
-				}
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return answers;
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, answer.getQID());
+			pstmt.setString(2, answer.getUserName());
+			pstmt.setString(3, answer.getContent());
+			pstmt.executeUpdate();
 		}
+	}
+	
+	
+	// Return an array list of arrays of strings containing the user name and content associated with answers
+	public List<String[]> getAnswers(int qID) {
+		String q = "SELECT userName, content FROM answers WHERE qID = ?";
+		List<String[]> answers = new ArrayList<>();
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, qID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				answers.add(new String[] {rs.getString("userName"), rs.getString("content")});
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return answers;
+	}
+	
+	
+	//Return the answer ID associated with a question ID given the number of response
+	public int getAnswerID(int qID, int answerCount){
+		String q = "SELECT id FROM answers WHERE qID = ?";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+	        pstmt.setInt(1, qID);
+	        ResultSet rs = pstmt.executeQuery();
+	        int counter = 0;
+	        while (rs.next()) {
+	        	if (answerCount == counter) {
+	        		return rs.getInt("id");
+	        	}
+	        	counter++;
+	        }
+	        
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }
+	    return 0;
+	}
+	
+	
+	// Sets the answer resolves to true
+	public void answerResolves(int id, int answerID) {
+		clearResolves(id, answerID);
+		String q = "UPDATE answers SET resolves = TRUE WHERE id = ?";
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, answerID);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public boolean doesAnswerResolve(int answerID) {
+		String q = "SELECT resolves FROM answers WHERE id = ?";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+	        pstmt.setInt(1, answerID);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	        	return rs.getBoolean("resolves");
+	        }
+	        
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }
+	    return false;
+	}
+	
+	
+	public void clearResolves(int qID, int answerID) {
+		String q = "UPDATE answers SET resolves = FALSE WHERE qID = ?";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+	        pstmt.setInt(1, qID);
+	        pstmt.executeUpdate();
+	        
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }
+	}
 }
