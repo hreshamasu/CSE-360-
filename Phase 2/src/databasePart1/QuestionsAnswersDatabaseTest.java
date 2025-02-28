@@ -36,6 +36,12 @@ class QuestionsAnswersDatabaseTest {
         if (emptyInput.isEmpty()) {
             actualErrorMessage = "Must have an input to update question";
         }
+        
+        System.out.println("Test: testUpdateQuestionWithoutInput()");
+        System.out.println("Expected: " + expectedErrorMessage);
+        System.out.println("Got: " + actualErrorMessage);
+        System.out.println();
+
 
         assertEquals(expectedErrorMessage, actualErrorMessage, "Error message should appear when trying to update without input.");
     }
@@ -49,6 +55,15 @@ class QuestionsAnswersDatabaseTest {
         qaDatabase.addComments(comment);
 
         List<String[]> comments = qaDatabase.getComments(qID);
+        
+        boolean commentExists = comments.stream().anyMatch(c -> c[1].equals("This is a comment"));
+
+        
+        System.out.println("Test: testCommentOnQuestionAsSameUser()");
+        System.out.println("Expected: Comment should be present");
+        System.out.println("Got: " + (commentExists ? "Comment found" : "Comment not found"));
+        System.out.println();
+        
         assertTrue(comments.stream().anyMatch(c -> c[1].equals("This is a comment")));
     }
 
@@ -60,6 +75,14 @@ class QuestionsAnswersDatabaseTest {
         qaDatabase.addComments(comment);
 
         List<String[]> comments = qaDatabase.getComments(qID);
+        
+        boolean commentExists = comments.stream().anyMatch(c -> c[1].equals("This is a comment"));
+        
+        System.out.println("Test: testCommentOnQuestionAsDifferentUser()");
+        System.out.println("Expected: Comment should be present");
+        System.out.println("Got: " + (commentExists ? "Comment found" : "Comment not found"));
+        System.out.println();
+        
         assertTrue(comments.stream().anyMatch(c -> c[1].equals("Another user comment")));
     }
 
@@ -69,6 +92,13 @@ class QuestionsAnswersDatabaseTest {
         int qID = 1;
         qaDatabase.resolveQuestion(qID);
 
+        boolean isResolved = qaDatabase.isResolved(qID);
+        
+        System.out.println("Test: testResolveQuestion()");
+        System.out.println("Expected: Question should be marked as resolved");
+        System.out.println("Got: " + (isResolved ? "Question is resolved" : "Question is NOT resolved"));
+        System.out.println();
+        
         assertTrue(qaDatabase.isResolved(qID));
     }
 
@@ -77,6 +107,13 @@ class QuestionsAnswersDatabaseTest {
     void testDeleteQuestion() throws SQLException {
         int qID = 1;
         qaDatabase.deleteQuestion(qID);
+        
+        boolean isDeleted = qaDatabase.isDeleted(qID);
+        
+        System.out.println("Test: testDeleteQuestion()");
+        System.out.println("Expected: Question should be deleted");
+        System.out.println("Got: " + (isDeleted ? "Question is deleted" : "Question is NOT deleted"));
+        System.out.println();
 
         assertTrue(qaDatabase.isDeleted(qID));
     }
