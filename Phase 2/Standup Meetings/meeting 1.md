@@ -1,5 +1,7 @@
 # Standup Meeting Description
 
+## No recording was made due to limited number of team members for the meeting
+
 ### Today's Standup Meeting was short, setting our team up for Phase 2 of the project and making sure those in attendance understood what the project asked of us. For those who didn't attend, the below directions are given so they can see it as soon as possible.
 
 "The plan is we have another meeting around ~8:30-9:00 tomorrow through Zoom. The meeting will be going over the tasks (bullet points on the phase 2 page on Canvas) we need to complete. We have 6 people and 6 requirements for the system with the Student implementation, so the idea is to divide each task to each person. We'll decide that tomorrow. 
