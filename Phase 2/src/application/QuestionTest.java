@@ -22,6 +22,11 @@ class QuestionTest {
         if (q.getTitle().isEmpty() || q.getBody().isEmpty()) {
             actualErrorMessage = "The title and body must contain characters";
         }
+      
+        System.out.println("Test: testCreateQuestionWithoutTitle()");
+        System.out.println("Expected: " + expectedErrorMessage);
+        System.out.println("Got: " + actualErrorMessage);
+        System.out.println();
 
         // Check if the expected error message matches what would appear in the UI
         assertEquals(expectedErrorMessage, actualErrorMessage, "Error message should be displayed for empty fields.");
@@ -38,7 +43,12 @@ class QuestionTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             new Question("testUser", longTitle, "Valid body text.");
         });
-
+        
+        System.out.println("Test: testCreateQuestionWithLongTitle()");
+        System.out.println("Expected Error: " + expectedErrorMessage);
+        System.out.println("Got: " + exception.getMessage());
+        System.out.println();
+        
         assertTrue(exception.getMessage().contains(expectedErrorMessage), "Title should be rejected if it's too long.");
     }
 
@@ -57,7 +67,12 @@ class QuestionTest {
         if (q.getTitle().isEmpty() || q.getBody().isEmpty()) {
             actualErrorMessage = "The title and body must contain characters";
         }
-
+        
+        System.out.println("Test: testCreateQuestionWithoutBody()");
+        System.out.println("Expected: " + expectedErrorMessage);
+        System.out.println("Got: " + actualErrorMessage);
+        System.out.println();
+        
         // Check if the expected error message matches what would appear in the UI
         assertEquals(expectedErrorMessage, actualErrorMessage, "Error message should be displayed for empty fields.");
     }
