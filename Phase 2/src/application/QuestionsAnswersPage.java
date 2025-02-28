@@ -268,8 +268,15 @@ public class QuestionsAnswersPage {
     		printQuestion(info, primaryStage, id);
     	
         });
-
-        vbox.getChildren().addAll(newAnswerText, addAnswerButton);
+        
+        //button to create a Comment
+        Button viewCommentsButton = new Button("View Feedback");
+        viewCommentsButton.setOnAction(a -> {
+    		// prints question and comments 
+    		printCommentPage(info, primaryStage, id);
+    	
+        });
+        vbox.getChildren().addAll(newAnswerText, addAnswerButton, viewCommentsButton);
         
         // Button to update the question
         Button updateButton = new Button("Update Question");
@@ -297,6 +304,93 @@ public class QuestionsAnswersPage {
             	vbox.getChildren().add(unResolveButton);
             }
         }
+        vbox.setMinWidth(500);
+    }
+
+// comment page that shows comments under the question chosen
+ public void printCommentPage(String[] info, Stage primaryStage, int id) {
+    	
+        // Clear the vbox initially
+        vbox.getChildren().clear();
+        vbox.setAlignment(Pos.CENTER_LEFT);
+
+        // Create labels for title, user name, and body
+        Label titleLabel = new Label(info[1]);
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        titleLabel.setWrapText(true);
+
+        Label userNameLabel = new Label(info[0]);
+        userNameLabel.setStyle("-fx-font-size: 14px;");
+        userNameLabel.setWrapText(true);
+        
+        Label bodyLabel = new Label(info[2]);
+        bodyLabel.setWrapText(true);
+        bodyLabel.setWrapText(true);
+        
+        // Separator between question and comments
+        Separator separator = new Separator();
+        separator.setMinWidth(250);
+
+        vbox.getChildren().addAll(titleLabel, userNameLabel, bodyLabel, separator);
+
+        // Array list to hold comments
+        List<String[]> comments = qaDatabase.getComments(id);
+
+        // Loop through comments and create user name and content labels for each
+        for (int i = 0; i < comments.size(); i++) {
+        	final int commentCount = i;
+        	String[] comment = comments.get(i);
+        	
+            Label commentUserLabel = new Label(comment[0]);
+            commentUserLabel.setWrapText(true);
+            
+            Label commentContentLabel = new Label("     " + comment[1]);
+            commentContentLabel.setWrapText(true);
+            
+            int commentID = qaDatabase.getCommentID(id, commentCount);
+            if (qaDatabase.doesAnswerResolve(commentID)) {
+            	commentUserLabel.setStyle("-fx-font-weight: bold;");
+            	commentContentLabel.setStyle("-fx-font-weight: bold;");
+            }
+            
+            
+            	vbox.getChildren().addAll(commentUserLabel, commentContentLabel);
+            
+        }
+
+        // Text area to enter the comment content
+        TextArea newCommentText = new TextArea();
+        newCommentText.setPromptText("Feedback for question");
+        newCommentText.setMaxWidth(400);
+        newCommentText.setPrefHeight(50);
+        newCommentText.setWrapText(true);
+
+  
+        //button to create a Comment
+        Button addCommentButton = new Button("Post Feedback");
+        addCommentButton.setOnAction(a -> {
+    		// Create new Comment and add it to the database
+    		Comment comment = new Comment(id, userName, newCommentText.getText());
+    		try {
+    			qaDatabase.addComments(comment);
+    		} catch (SQLException e) {
+    			e.printStackTrace();
+    		}
+    		newCommentText.clear();
+    		printCommentPage(info, primaryStage, id);
+    	
+        });
+
+        Button viewAnswersButton = new Button("View Answers");
+        viewAnswersButton.setOnAction(a -> {
+    		// prints question and answers 
+    		printQuestion(info, primaryStage, id);
+    	
+        });
+        
+
+        vbox.getChildren().addAll(newCommentText, addCommentButton, viewAnswersButton);
+        
         vbox.setMinWidth(500);
     }
 
@@ -358,4 +452,5 @@ public class QuestionsAnswersPage {
         vbox.setStyle("-fx-alignment: center; -fx-padding: 20;");
         vbox.setMinWidth(450);
     }
+    
 }
