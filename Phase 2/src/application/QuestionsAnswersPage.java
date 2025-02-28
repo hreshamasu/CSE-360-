@@ -35,6 +35,9 @@ public class QuestionsAnswersPage {
     // Initialize a boolean to check if the resolved checkbox is checked
     private boolean isChecked = false;
     
+    // Initialize filter text
+    private String filterText = "";
+    
     final User user;
     final DatabaseHelper databaseHelper;
     
@@ -78,7 +81,7 @@ public class QuestionsAnswersPage {
             createQuestion(primaryStage);
         });
         
-        // CheckBox to allow filtering of own unresolved questions
+        // filtering of unresolved questions
         CheckBox ownUnresolved = new CheckBox("View only own unresolved questions");
         ownUnresolved.setOnAction(a -> {
         	if (isChecked) {
@@ -89,9 +92,25 @@ public class QuestionsAnswersPage {
         	show(primaryStage);
         });
         ownUnresolved.setSelected(isChecked);
-        posts.getChildren().addAll(addQuestion, ownUnresolved);
+        
+        // Add filter text field and button
+        TextField filterField = new TextField();
+        filterField.setPromptText("Filter questions...");
+        filterField.setText(filterText);
+        filterField.setMinWidth(180);
+        
+        Button filterButton = new Button("Filter");
+        filterButton.setOnAction(a -> {
+            filterText = filterField.getText().trim().toLowerCase();
+            show(primaryStage);
+        });
+        
+        HBox filterBox = new HBox(10);
+        filterBox.setAlignment(Pos.CENTER_LEFT);
+        filterBox.getChildren().addAll(filterField, filterButton);
+        
+        posts.getChildren().addAll(addQuestion, ownUnresolved, filterBox);
 
-        // Fill posts vbox with all posted questions
         try {
             for (int i = qaDatabase.numQuestions(); i > 0; i--) {
 
@@ -100,7 +119,6 @@ public class QuestionsAnswersPage {
                     continue;
                 }
                 
-                // Skip to next question if ownUnresolved is checked and next question is resolved or not owned by current user
                 if (ownUnresolved.isSelected()) {
                 	if (!(!(qaDatabase.isResolved(i)) && qaDatabase.doesUserOwnQuestion(i, userName))) {
                 		continue;
@@ -108,9 +126,25 @@ public class QuestionsAnswersPage {
                 }
                 
                 final int qID = i;
+                String questionTitle = qaDatabase.getTitleFromQuestionID(qID);
+                String questionBody = "";
+                
+                try {
+                    String[] questionInfo = qaDatabase.getQuestionInfo(qID);
+                    questionBody = questionInfo[2].toLowerCase();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+                // Skip if filter text is not empty and neither title nor body contains the filter text
+                if (!filterText.isEmpty() && 
+                    !questionTitle.toLowerCase().contains(filterText) && 
+                    !questionBody.contains(filterText)) {
+                    continue;
+                }
                 
                 // Create button for each question
-                Button postButton = new Button(qaDatabase.getTitleFromQuestionID(qID));
+                Button postButton = new Button(questionTitle);
                 
                 // If the current question is resolved, add a tag
                 if (qaDatabase.isResolved(i)) {
@@ -369,7 +403,7 @@ public class QuestionsAnswersPage {
         //button to create a Comment
         Button addCommentButton = new Button("Post Feedback");
         addCommentButton.setOnAction(a -> {
-    		// Create new Comment and add it to the database
+    		// Create new comment and add it to the database
     		Comment comment = new Comment(id, userName, newCommentText.getText());
     		try {
     			qaDatabase.addComments(comment);
@@ -383,7 +417,6 @@ public class QuestionsAnswersPage {
 
         Button viewAnswersButton = new Button("View Answers");
         viewAnswersButton.setOnAction(a -> {
-    		// prints question and answers 
     		printQuestion(info, primaryStage, id);
     	
         });
@@ -453,4 +486,8 @@ public class QuestionsAnswersPage {
         vbox.setMinWidth(450);
     }
     
+    // Method to clear the filter text
+    public void clearFilter() {
+        this.filterText = "";
+    }
 }
