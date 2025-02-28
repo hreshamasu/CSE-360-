@@ -5,8 +5,8 @@ Zoom link: https://asu.zoom.us/rec/share/6mVb_PrVDbqt3e_zBVXg8CjIzc4QYqxgDPDrsRy
 password:2bpvm?J^
 
 
-## standup make up for ...
+## standup make up for Shravan:
 
-Zoom link:
+Zoom link: https://asu.zoom.us/rec/share/vKyecySX7fMAHQL9Cg8qYzMUpqYJ8MlSOXOJhb76a09VKwybeQpVnXgj7Etdvi53.LpqCArZaMA2zrLov
 
-password: 
+password: t45G$SQv
