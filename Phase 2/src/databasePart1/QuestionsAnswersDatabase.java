@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import application.Question;
 import application.Answer;
+import application.Comment;
 
 public class QuestionsAnswersDatabase {
 	
@@ -31,6 +32,7 @@ public class QuestionsAnswersDatabase {
 			// Create the necessary tables if they don't exist
 			createQuestionTable();  
 			createAnswerTable();
+			createCommentTable();
 		} catch (ClassNotFoundException e) {
 			System.err.println("JDBC Driver not found: " + e.getMessage());
 		}
@@ -61,6 +63,15 @@ public class QuestionsAnswersDatabase {
 		statement.execute(answerTable);
 	}
 	
+	private void createCommentTable() throws SQLException {
+		String commentTable = "CREATE TABLE IF NOT EXISTS comments ("
+				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "qID INT,"
+				+ "userName VARCHAR(255), "
+				+ "content TEXT, "
+				+ "FOREIGN KEY (qID) REFERENCES questions(id) ON DELETE CASCADE)";
+		statement.execute(commentTable);
+	}
 	
 	// Count the number of questions
 	public int numQuestions() throws SQLException {
@@ -349,4 +360,75 @@ public class QuestionsAnswersDatabase {
 	    	e.printStackTrace();
 	    }
 	}
+	
+	//comment implementation in database
+	
+	public int numComments(int qID) throws SQLException {
+		String q = "SELECT COUNT(*) AS count FROM comments WHERE qID = ?";
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, qID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("count");
+			}
+		}
+		return 0;
+	}
+	
+	
+	// Adds an comment to a question
+	public void addComments(Comment comment) throws SQLException{
+		String q = "INSERT INTO comments (qID, userName, content) VALUES (?, ?, ?)";
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, comment.getQID());
+			pstmt.setString(2, comment.getUserName());
+			pstmt.setString(3, comment.getContent());
+			pstmt.executeUpdate();
+		}
+	}
+	
+	
+	// Return an array list of arrays of strings containing the user name and content associated with comments
+	public List<String[]> getComments(int qID) {
+		String q = "SELECT userName, content FROM comments WHERE qID = ?";
+		List<String[]> comments = new ArrayList<>();
+		
+		try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+			pstmt.setInt(1, qID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				comments.add(new String[] {rs.getString("userName"), rs.getString("content")});
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return comments;
+	}
+	
+	
+	//Return the comment ID associated with a question ID given the number of response
+	public int getCommentID(int qID, int commentCount){
+		String q = "SELECT id FROM comments WHERE qID = ?";
+	    
+	    try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+	        pstmt.setInt(1, qID);
+	        ResultSet rs = pstmt.executeQuery();
+	        int counter = 0;
+	        while (rs.next()) {
+	        	if (commentCount == counter) {
+	        		return rs.getInt("id");
+	        	}
+	        	counter++;
+	        }
+	        
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    }
+	    return 0;
+	}
+	
+	
 }
