@@ -4,9 +4,3 @@ Zoom link: https://asu.zoom.us/rec/share/0AIc1U-e3M-rX0YGBRINKxs_XVlx4tKaVVDdQZS
 
 password:  Npj!?P9U
 
-
-## standup make up for ...
-
-Zoom link:
-
-password: 
