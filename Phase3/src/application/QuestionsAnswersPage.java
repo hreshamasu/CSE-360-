@@ -363,7 +363,6 @@ public class QuestionsAnswersPage {
             
             int answerID = qaDatabase.getAnswerID(id, answerCount);
             
-            // Optionally highlight if this answer resolves the question
             if (qaDatabase.doesAnswerResolve(answerID)) {
                 answerUserLabel.setStyle("-fx-font-weight: bold;");
                 answerContentLabel.setStyle("-fx-font-weight: bold;");
