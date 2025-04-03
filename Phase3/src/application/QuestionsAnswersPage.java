@@ -183,6 +183,7 @@ public class QuestionsAnswersPage {
         ScrollPane rightScrollPane = new ScrollPane();
         rightScrollPane.setContent(vbox);
         rightScrollPane.setFitToWidth(true);
+        rightScrollPane.setFitToHeight(true);
         rightScrollPane.setPrefWidth(550);
         rightScrollPane.setPadding(new Insets (10));
 
@@ -229,6 +230,7 @@ public class QuestionsAnswersPage {
         trustedFilterCheckBox.setSelected(filterByTrusted);
         trustedFilterCheckBox.setOnAction(e -> {
             filterByTrusted = trustedFilterCheckBox.isSelected();
+            show(primaryStage);
         });
         vbox.getChildren().add(trustedFilterCheckBox);
 
@@ -347,8 +349,8 @@ public class QuestionsAnswersPage {
         for (int i = 0; i < answers.size(); i++) {
             final int answerCount = i;
             String[] answer = answers.get(i);
-            
-            // Create a container for this answer and its reviews
+
+            // Create a container for this answer and its reviews.
             VBox answerBox = new VBox(5);
             answerBox.setStyle("-fx-border-color: lightgray; -fx-padding: 10;");
             
@@ -367,11 +369,45 @@ public class QuestionsAnswersPage {
                 answerContentLabel.setStyle("-fx-font-weight: bold;");
             }
             
-            // Add review controls based on user role
-            if (user.getRole().equalsIgnoreCase("reviewer")) {
+         // Reviewer branch for each answer:
+            if (user.getRole().toLowerCase().contains("reviewer")) {
                 try {
+                    // First, display all reviews for this answer
+                    List<Review> allReviews = qaDatabase.getReviewsForTarget(answerID, "answer");
+                    if (!allReviews.isEmpty()) {
+                        Label allReviewsHeader = new Label("All reviews for this answer:");
+                        allReviewsHeader.setStyle("-fx-font-style: italic;");
+                        answerBox.getChildren().add(allReviewsHeader);
+                        for (Review r : allReviews) {
+                            Label reviewLabel = new Label(r.getReviewerName() + " says: " + r.getReviewText());
+                            reviewLabel.setWrapText(true);
+                            // Highlight logged-in reviewer's review
+                            if (r.getReviewerName().equalsIgnoreCase(user.getUserName())) {
+                                reviewLabel.setStyle("-fx-font-weight: bold; -fx-background-color: #ddffdd;");
+                            }
+                            answerBox.getChildren().add(reviewLabel);
+                        }
+                    }
+                    
+                    // Now, allow the logged-in reviewer to add/update/delete their own review
                     Review myReview = qaDatabase.getReviewForTargetByReviewer(answerID, "answer", user.getUserName());
-                    if (myReview != null) {
+                    if (myReview == null) {
+                        // No review exists for this answer by the reviewer, so show an input to add one
+                        TextField addReviewField = new TextField();
+                        addReviewField.setPromptText("Add your review for this answer");
+                        Button addReviewButton = new Button("Submit Review");
+                        addReviewButton.setOnAction(a -> {
+                            try {
+                                Review newReview = new Review(answerID, "answer", user.getUserName(), addReviewField.getText());
+                                qaDatabase.addReview(newReview);
+                                show(primaryStage);
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+                        answerBox.getChildren().addAll(addReviewField, addReviewButton);
+                    } else {
+                        // Review exists; provide controls to update or delete it.
                         Label myReviewLabel = new Label("Your Review: " + myReview.getReviewText());
                         myReviewLabel.setWrapText(true);
                         Button updateReviewButton = new Button("Update Review");
@@ -399,39 +435,25 @@ public class QuestionsAnswersPage {
                             }
                         });
                         answerBox.getChildren().addAll(myReviewLabel, updateReviewButton, deleteReviewButton);
-                    } else {
-                        TextField addReviewField = new TextField();
-                        addReviewField.setPromptText("Add your review for this answer");
-                        Button addReviewButton = new Button("Submit Review");
-                        addReviewButton.setOnAction(a -> {
-                            try {
-                                Review newReview = new Review(answerID, "answer", user.getUserName(), addReviewField.getText());
-                                qaDatabase.addReview(newReview);
-                                show(primaryStage);
-                            } catch (SQLException ex) {
-                                ex.printStackTrace();
-                            }
-                        });
-                        answerBox.getChildren().addAll(addReviewField, addReviewButton);
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-            } else if(user.getRole().equalsIgnoreCase("student")) {
-                // Student: Display all reviews for the answer in a read-only manner
-            	try {
+            } else if (user.getRole().equalsIgnoreCase("student")) {
+                // Student: display all reviews for this answer (read-only)
+                try {
                     List<Review> reviews = qaDatabase.getReviewsForTarget(answerID, "answer");
-                    if(!reviews.isEmpty()){
+                    if (!reviews.isEmpty()) {
                         Label reviewsHeader = new Label("Reviews for this answer:");
                         reviewsHeader.setStyle("-fx-font-style: italic;");
                         answerBox.getChildren().add(reviewsHeader);
-
-                        // Apply the trusted reviewers filter if enabled.
+                        
+                        // Optionally, apply trusted reviewer filtering here...
                         List<String> trustedReviewers = null;
                         if (trustedFilterCheckBox.isSelected()) {
                             trustedReviewers = databaseHelper.getTrustedReviewers(user.getUserName());
                         }
-                        for(Review r : reviews) {
+                        for (Review r : reviews) {
                             if (trustedFilterCheckBox.isSelected() && (trustedReviewers == null || !trustedReviewers.contains(r.getReviewerName()))) {
                                 continue;
                             }
@@ -440,31 +462,28 @@ public class QuestionsAnswersPage {
                             answerBox.getChildren().add(reviewLabel);
                         }
                     }
-                } catch(SQLException ex) {
+                } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
-                // Add this answer box to the main vbox
-                vbox.getChildren().add(answerBox);
             }
             
+            // If the student who asked the question is viewing, add the "Answers the Question" button here.
             if (qaDatabase.doesUserOwnQuestion(id, userName)) {
-            	Button answeredButton = new Button("Answers the Question");
-            	
-            	answeredButton.setOnAction(a -> {
-            		
-            		
-		    		if (answerID == 0) {
-		    			System.out.println("Error in getAnswerID\n");
-		    			return;
-		    		}
-		        	qaDatabase.resolveQuestion(id);
-		        	qaDatabase.answerResolves(id, answerID);
-		            show(primaryStage);
+                Button answeredButton = new Button("Answers the Question");
+                answeredButton.setOnAction(a -> {
+                    if (answerID == 0) {
+                        System.out.println("Error in getAnswerID");
+                        return;
+                    }
+                    qaDatabase.resolveQuestion(id);
+                    qaDatabase.answerResolves(id, answerID);
+                    show(primaryStage);
                 });
-            	vbox.getChildren().addAll(answerUserLabel, answerContentLabel, answeredButton);
-            } else {
-            	vbox.getChildren().addAll(answerUserLabel, answerContentLabel);
+                answerBox.getChildren().add(answeredButton);
             }
+            
+            // Finally, add the entire answerBox to the main vbox.
+            vbox.getChildren().add(answerBox);
         }
 
         // Text area to enter the answer content
