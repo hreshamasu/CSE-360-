@@ -24,11 +24,12 @@ public class ReviewerRequestPage {
 
         ListView<String> requestList = new ListView<>();
         List<String> requests = new ArrayList<>();
-        String sql = "SELECT userName FROM cse360users WHERE reviewerRequested = 1";
+        // Query the reviewer_requests table
+        String sql = "SELECT studentUsername FROM reviewer_requests";
         try (PreparedStatement pstmt = dbHelper.getConnection().prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                requests.add(rs.getString("userName"));
+                requests.add(rs.getString("studentUsername"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -40,14 +41,27 @@ public class ReviewerRequestPage {
             String selectedUser = requestList.getSelectionModel().getSelectedItem();
             if (selectedUser != null) {
                 try {
-                    String updateSql = "UPDATE cse360users SET role = 'reviewer', reviewerRequested = 0 WHERE userName = ?";
-                    try (PreparedStatement pstmt = dbHelper.getConnection().prepareStatement(updateSql)) {
-                        pstmt.setString(1, selectedUser);
-                        pstmt.executeUpdate();
-                    }
+                    // Approve the request: update the user's role and remove the request
+                    dbHelper.approveReviewerRequest(selectedUser);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Approved " + selectedUser + " as reviewer.");
                     alert.show();
-                    show(primaryStage);
+                    show(primaryStage); // Refresh the page
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        
+        // New Disapprove button to remove a reviewer request
+        Button disapproveButton = new Button("Disapprove Selected Request");
+        disapproveButton.setOnAction(e -> {
+            String selectedUser = requestList.getSelectionModel().getSelectedItem();
+            if (selectedUser != null) {
+                try {
+                    dbHelper.removeReviewerRequest(selectedUser);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Disapproved reviewer request for " + selectedUser);
+                    alert.show();
+                    show(primaryStage); // Refresh the page
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -59,9 +73,10 @@ public class ReviewerRequestPage {
             new InstructorHomePage().show(dbHelper, primaryStage);
         });
 
-        layout.getChildren().addAll(title, requestList, approveButton, backButton);
+        layout.getChildren().addAll(title, requestList, approveButton, disapproveButton, backButton);
         Scene scene = new Scene(layout, 500, 400);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Reviewer Requests");
     }
 }
+
