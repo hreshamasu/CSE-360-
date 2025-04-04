@@ -89,13 +89,13 @@ public class RoleSelectionPage {
 	    	}
 	    });
 
-	    Button ReviewerButton = new Button("Instructor");
+	    Button ReviewerButton = new Button("Reviewer");
 	    ReviewerButton.setOnAction(a -> {
 	    	String target = "reviewer";
 	    	boolean hasRole = Arrays.asList(roleList).contains(target);
 
 	    	if(hasRole) {
-	    	new ReviewerHomePage(user, databaseHelper);
+	    	new ReviewerHomePage(user, databaseHelper).show(primaryStage);
 	    	}
 	    	else {
 	    		InvalidRoleError.setText(InvalidRoleError.getText() + "\n" + InvalidRoleError);
