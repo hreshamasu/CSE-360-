@@ -508,15 +508,6 @@ public class DatabaseHelper {
 	    return reviewers;
 	}
 	
-	// Set reviewerRequested flag to 1 for the given user
-	public void requestReviewerRole(String userName) throws SQLException {
-	    String q = "UPDATE cse360users SET reviewerRequested = 1 WHERE userName = ?";
-	    try (PreparedStatement pstmt = connection.prepareStatement(q)) {
-	        pstmt.setString(1, userName);
-	        pstmt.executeUpdate();
-	    }
-	}
-	
 	// get private messages for the given user
 	public List<Message> getMessagesForUser(String receiver) throws SQLException {
 	    List<Message> messages = new ArrayList<>();
@@ -588,14 +579,23 @@ public class DatabaseHelper {
 		    pstmt.executeUpdate();
 		}
 	}
-
+	
+	// Set reviewerRequested flag to 1 for the given user
+		public void requestReviewerRole(String userName) throws SQLException {
+		    String q = "UPDATE cse360users SET reviewerRequested = 1 WHERE userName = ?";
+		    try (PreparedStatement pstmt = connection.prepareStatement(q)) {
+		        pstmt.setString(1, userName);
+		        pstmt.executeUpdate();
+		    }
+		}
 	
 	// Method to add a reviewer request
 	public void addReviewerRequest(String studentUsername) throws SQLException {
 	    String sql = "INSERT INTO reviewer_requests (studentUsername) VALUES (?)";
 	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-	         pstmt.setString(1, studentUsername);
-	         pstmt.executeUpdate();
+	        pstmt.setString(1, studentUsername);
+	        pstmt.executeUpdate();
+	        System.out.println("Adding reviewer request for: " + studentUsername);
 	    }
 	}
 
@@ -604,10 +604,10 @@ public class DatabaseHelper {
 	    List<String> requests = new ArrayList<>();
 	    String sql = "SELECT studentUsername FROM reviewer_requests";
 	    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-	         ResultSet rs = pstmt.executeQuery();
-	         while (rs.next()) {
-	             requests.add(rs.getString("studentUsername"));
-	         }
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+	            requests.add(rs.getString("studentUsername"));
+	        }
 	    }
 	    return requests;
 	}
