@@ -16,7 +16,7 @@ public class AnswerEvaluator {
         String content = "";
         
         if (content.isEmpty()) {
-            errorMessage = "Error: Answer content cannot be empty";
+            errorMessage = "Error - Answer content is empty";
             return errorMessage;
         }
         
@@ -30,7 +30,7 @@ public class AnswerEvaluator {
         successful = false;
         
         try {
-            String content = "This is a test answer";
+            String content = "This is an answer";
             Answer answer = new Answer(questionId, userName, content);
             
             int initialCount = qaDatabase.numAnswers(questionId);
@@ -42,11 +42,11 @@ public class AnswerEvaluator {
                 successful = true;
                 return errorMessage;
             } else {
-                errorMessage = "Error: Answer was not added successfully";
+                errorMessage = "Error - Answer was not added";
                 return errorMessage;
             }
         } catch (SQLException e) {
-            errorMessage = "Error: Exception during answer posting: " + e.getMessage();
+            errorMessage = "Error - Answer was not added" + e.getMessage();
             return errorMessage;
         }
     }
@@ -63,11 +63,11 @@ public class AnswerEvaluator {
                 successful = true;
                 return errorMessage;
             } else {
-                errorMessage = "Error: Failed to mark answer as resolving";
+                errorMessage = "Error - Failed to mark answer as resolving";
                 return errorMessage;
             }
         } catch (Exception e) {
-            errorMessage = "Error: Exception during mark answer as resolving: " + e.getMessage();
+            errorMessage = "Error - Failed to mark answer as resolving" + e.getMessage();
             return errorMessage;
         }
     }
@@ -80,13 +80,13 @@ public class AnswerEvaluator {
         try {
             int answerCount = qaDatabase.numAnswers(questionId);
             if (answerCount == 0) {
-                errorMessage = "Error: Cannot resolve a question without answers";
+                errorMessage = "Error - Question without answers";
                 return errorMessage;
             }
             successful = true;
             return errorMessage;
         } catch (SQLException e) {
-            errorMessage = "Error: Exception during resolve without answers test: " + e.getMessage();
+            errorMessage = "Error - Question without answers" + e.getMessage();
             return errorMessage;
         }
     }
@@ -97,7 +97,7 @@ public class AnswerEvaluator {
         successful = false;
         
         try {
-            String content = "This is a test comment";
+            String content = "Test comment";
             Comment comment = new Comment(questionId, userName, content);
             
             int initialCount = qaDatabase.numComments(questionId);
@@ -109,11 +109,11 @@ public class AnswerEvaluator {
                 successful = true;
                 return errorMessage;
             } else {
-                errorMessage = "Error: Comment was not added successfully";
+                errorMessage = "Error - Comment was not added";
                 return errorMessage;
             }
         } catch (SQLException e) {
-            errorMessage = "Error: Exception during comment posting: " + e.getMessage();
+            errorMessage = "Error - Comment was not added" + e.getMessage();
             return errorMessage;
         }
     }
