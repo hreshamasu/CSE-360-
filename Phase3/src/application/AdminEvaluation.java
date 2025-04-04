@@ -21,7 +21,7 @@ public class AdminEvaluator {
         
         try {
             if (!dbHelper.doesUserExist(userName)) {
-                errorMessage = "Error: User to delete does not exist";
+                errorMessage = "Error - User does not exist";
                 return errorMessage;
             }
             
@@ -35,15 +35,15 @@ public class AdminEvaluator {
                     successful = true;
                     return errorMessage; // Empty string indicates success
                 } else {
-                    errorMessage = "Error: User still exists after deletion";
+                    errorMessage = "Error - User still exists";
                     return errorMessage;
                 }
             } else {
-                errorMessage = "Error: User deletion failed - " + result;
+                errorMessage = "Error - Deletion failed - " + result;
                 return errorMessage;
             }
         } catch (SQLException e) {
-            errorMessage = "Error: Exception during user deletion: " + e.getMessage();
+            errorMessage = "Error - User still exists" + e.getMessage();
             return errorMessage;
         }
     }
@@ -62,11 +62,11 @@ public class AdminEvaluator {
                 successful = true;
                 return errorMessage;
             } else {
-                errorMessage = "Error: Generated invitation code has incorrect roles";
+                errorMessage = "Error - Incorrect roles";
                 return errorMessage;
             }
         } else {
-            errorMessage = "Error: Failed to generate invitation code";
+            errorMessage = "Error - Failed to make code";
             return errorMessage;
         }
     }
@@ -82,7 +82,7 @@ public class AdminEvaluator {
             successful = true;
             return errorMessage; // Empty string indicates success
         } else {
-            errorMessage = "Error: Failed to validate a fresh invitation code";
+            errorMessage = "Error - Failed to validate code";
             return errorMessage;
         }
     }
@@ -94,7 +94,7 @@ public class AdminEvaluator {
         
         try {
             if (!dbHelper.doesUserExist(userName)) {
-                errorMessage = "Error: User for role change does not exist";
+                errorMessage = "Error - User does not exist";
                 return errorMessage;
             }
             
@@ -106,11 +106,11 @@ public class AdminEvaluator {
                 successful = true;
                 return errorMessage;
             } else {
-                errorMessage = "Error: User roles were not changed correctly";
+                errorMessage = "Error - User roles were not changed correctly";
                 return errorMessage;
             }
         } catch (SQLException e) {
-            errorMessage = "Error: Exception during role change: " + e.getMessage();
+            errorMessage = "Error - User roles were not changed correctly " + e.getMessage();
             return errorMessage;
         }
     }
@@ -132,15 +132,15 @@ public class AdminEvaluator {
                     successful = true;
                     return errorMessage;
                 } else {
-                    errorMessage = "Error: Reviewer request was not removed after approval";
+                    errorMessage = "Error - Reviewer request was not removed after approval";
                     return errorMessage;
                 }
             } else {
-                errorMessage = "Error: User does not have reviewer role after approval";
+                errorMessage = "Error - User does not have reviewer role";
                 return errorMessage;
             }
         } catch (SQLException e) {
-            errorMessage = "Error: Exception during reviewer approval: " + e.getMessage();
+            errorMessage = "Error - User does not have reviewer role" + e.getMessage();
             return errorMessage;
         }
     }
@@ -157,7 +157,7 @@ public class AdminEvaluator {
             successful = true;
             return errorMessage;
         } else {
-            errorMessage = "Error: Failed to create one-time password";
+            errorMessage = "Error - Fail to make password";
             return errorMessage;
         }
     }
